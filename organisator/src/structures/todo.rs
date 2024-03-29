@@ -1,9 +1,11 @@
 use time::{error::IndeterminateOffset, OffsetDateTime};
 
+use crate::traits::typed::Typed;
+
 pub struct Todo {
     // compulsary attributes
     title: String,
-    is_completed: bool,
+    completion_status: bool,
     date_created: OffsetDateTime,
     date_modified: OffsetDateTime,
     // optional attributes
@@ -14,26 +16,26 @@ pub struct Todo {
 
 impl Todo {
     // getters
-    pub fn get_title(&self) -> &str {
+    pub fn title(&self) -> &str {
         &self.title
     }
-    pub fn get_description(&self) -> &Option<String> {
+    pub fn description(&self) -> &Option<String> {
         &self.description
     }
-    pub fn get_date_created(&self) -> &OffsetDateTime {
+    pub fn date_created(&self) -> &OffsetDateTime {
         &self.date_created
     }
-    pub fn get_date_modified(&self) -> &OffsetDateTime {
+    pub fn date_modified(&self) -> &OffsetDateTime {
         &self.date_modified
     }
-    pub fn get_date_completed(&self) -> &Option<OffsetDateTime> {
+    pub fn date_completed(&self) -> &Option<OffsetDateTime> {
         &self.date_completed
     }
-    pub fn get_date_deadline(&self) -> &Option<OffsetDateTime> {
+    pub fn date_deadline(&self) -> &Option<OffsetDateTime> {
         &self.date_deadline
     }
-    pub fn is_completed(&self) -> bool {
-        self.is_completed
+    pub fn completion_status(&self) -> bool {
+        self.completion_status
     }
 
     // setters
@@ -51,14 +53,14 @@ impl Todo {
     pub fn set_date_deadline(&mut self, date_deadline: Option<OffsetDateTime>) {
         self.date_completed = date_deadline;
     }
-    pub fn set_completed(&mut self, is_completed: bool) {
-        self.is_completed = is_completed;
+    pub fn set_completion_status(&mut self, is_completed: bool) {
+        self.completion_status = is_completed;
         self.update_date_modified();
     }
 
     // additional functions
     pub fn new(title: &str) -> Result<Self, IndeterminateOffset> {
-        let current_time = Self::get_current_local_time();
+        let current_time = Self::current_local_time();
         match current_time {
             Ok(current_time_extracted) => Ok(Todo {
                 title: String::from(title),
@@ -67,26 +69,32 @@ impl Todo {
                 date_modified: current_time_extracted,
                 date_deadline: None,
                 date_completed: None,
-                is_completed: false,
+                completion_status: false,
             }),
             Err(err) => Err(err),
         }
     }
-    pub fn toggle_is_completed(&mut self) {
-        self.is_completed = !self.is_completed;
+    pub fn toggle_completion_status(&mut self) {
+        self.completion_status = !self.completion_status;
         self.update_date_modified();
     }
 
     // private functions
     fn update_date_modified(&mut self) {
-        let current_time = Self::get_current_local_time();
+        let current_time = Self::current_local_time();
         match current_time {
             Ok(x) => self.date_modified = x,
             Err(err) => println!("Could not get current timestamp: {}", err),
         }
     }
 
-    fn get_current_local_time() -> Result<OffsetDateTime, IndeterminateOffset> {
+    fn current_local_time() -> Result<OffsetDateTime, IndeterminateOffset> {
         OffsetDateTime::now_local()
+    }
+}
+
+impl Typed for Todo {
+    fn get_type(&self) -> &str {
+        return "Todo";
     }
 }
