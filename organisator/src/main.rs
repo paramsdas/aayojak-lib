@@ -1,6 +1,6 @@
 use std::io;
 
-use life_track_hub::structures::todo::Todo;
+use organisator::structures::todo::Todo;
 
 fn main() {
     let mut todo_list: Vec<Todo> = Vec::new();
