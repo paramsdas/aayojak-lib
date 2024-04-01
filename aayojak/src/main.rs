@@ -1,6 +1,6 @@
 use std::io;
 
-use organisator::structures::todo::Todo;
+use aayojak::structures::todo::Todo;
 
 fn main() {
     let mut todo_list: Vec<Todo> = Vec::new();
