@@ -1,4 +1,4 @@
-use crate::structures::todo::Todo;
+use aayojak::structures::todo::Todo;
 
 #[test]
 fn test_new_todo() {
