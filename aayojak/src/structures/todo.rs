@@ -98,3 +98,15 @@ impl Typed for Todo {
         return "Todo";
     }
 }
+
+impl ToString for Todo {
+    fn to_string(&self) -> String {
+        let formatted_string = format!(
+            "\ttitle: {},\n\tdate_created: {},\n\tcompletion_status:{}",
+            self.title(),
+            self.date_created(),
+            self.completion_status()
+        );
+        String::from(formatted_string)
+    }
+}

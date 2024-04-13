@@ -25,7 +25,7 @@ fn main() {
             }
         } else if choice.trim() == "2" {
             for (i, t) in todo_list.iter().enumerate() {
-                println!("{{Id:{}, Title:{}}}", i, t.title());
+                println!("Id:{}\nTodo:\n{}\n", i, t.to_string());
             }
         } else {
             println!("Please enter a valid choice")
