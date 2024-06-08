@@ -1,34 +1,19 @@
-use std::io;
+use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 
-use aayojak::structures::todo::Todo;
+#[get("/")]
+async fn welcome() -> impl Responder {
+    HttpResponse::Ok().body("Hello world, welcome to aayojak!")
+}
 
-fn main() {
-    let mut todo_list: Vec<Todo> = Vec::new();
-    loop {
-        print!("1) Add ToDo\n2) View Exisiting Todos\n\nChoice:\n");
+#[post("/echo")]
+async fn echo(req_body: String) -> impl Responder {
+    HttpResponse::Ok().body(req_body)
+}
 
-        let mut choice = String::new();
-        io::stdin()
-            .read_line(&mut choice)
-            .expect("Failed to read line");
-
-        if choice.trim() == "1" {
-            let mut title = String::new();
-            print!("\nTitle:\n");
-            io::stdin()
-                .read_line(&mut title)
-                .expect("Failed to read line");
-            let new_todo = Todo::new(&(title.trim())[..]);
-            match new_todo {
-                Ok(todo) => todo_list.push(todo),
-                Err(err) => println!("Could not create ToDo: {}", err),
-            }
-        } else if choice.trim() == "2" {
-            for (i, t) in todo_list.iter().enumerate() {
-                println!("Id:{}\nTodo:\n{}\n", i, t.to_string());
-            }
-        } else {
-            println!("Please enter a valid choice")
-        }
-    }
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().service(welcome).service(echo))
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
 }
