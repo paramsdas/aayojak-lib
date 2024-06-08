@@ -1,10 +1,13 @@
+use serde::{Deserialize, Serialize};
 use time::{error::IndeterminateOffset, OffsetDateTime};
 
 use crate::traits::typed::Typed;
 
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Todo {
     // compulsary attributes
     title: String,
+    id: i32,
     completion_status: bool,
     date_created: OffsetDateTime,
     date_modified: OffsetDateTime,
@@ -18,6 +21,9 @@ impl Todo {
     // getters
     pub fn title(&self) -> &str {
         &self.title
+    }
+    pub fn id(&self) -> &i32 {
+        &self.id
     }
     pub fn description(&self) -> &Option<String> {
         &self.description
@@ -59,11 +65,12 @@ impl Todo {
     }
 
     // additional functions
-    pub fn new(title: &str) -> Result<Self, IndeterminateOffset> {
+    pub fn new(title: &str, id: i32) -> Result<Self, IndeterminateOffset> {
         let current_time = Self::current_local_time();
         match current_time {
             Ok(current_time_extracted) => Ok(Todo {
                 title: String::from(title),
+                id,
                 description: None,
                 date_created: current_time_extracted,
                 date_modified: current_time_extracted,
