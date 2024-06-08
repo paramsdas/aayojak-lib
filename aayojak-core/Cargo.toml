@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 time = { version = "0.3.33", features = ["local-offset"] }
-rocket = "0.5.0"
+actix-web = "4"
 
 [features]
 local-offset = []
