@@ -30,30 +30,35 @@ async fn echo(req_body: String) -> impl Responder {
     HttpResponse::Ok().body(req_body)
 }
 
+#[get("/")]
+async fn api_version() -> impl Responder {
+    HttpResponse::Ok().body("v0.0.1")
+}
+
 #[post("/todo/create")]
 async fn create_todo(
-    todo: web::Query<CreateTodoBody>,
+    todo_request_body: web::Json<CreateTodoBody>,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    println!("Creating todo...");
+    // TODO: handle unwrap
     let mut app_state = data.todo_list.lock().unwrap();
     let new_id = app_state.id_counter;
-    let todo_result = Todo::new(&todo.title, new_id);
-    match todo_result {
-        Ok(todo) => {
-            app_state.map.insert(new_id, todo);
-            let inserted_todo = app_state.map.get(&new_id).unwrap();
-            let todo_from_todo_list = serde_json::to_string(inserted_todo).unwrap();
-            app_state.id_counter += 1;
-            HttpResponse::Ok().body(todo_from_todo_list)
-        }
-        Err(e) => HttpResponse::InternalServerError().body(format!("Could not create todo: {e}")),
-    }
+    // create todo
+    println!("Creating todo...");
+    let todo = Todo::new(&todo_request_body.title, new_id);
+    app_state.map.insert(new_id, todo);
+    // TODO: handle unwrap
+    let inserted_todo = app_state.map.get(&new_id).unwrap();
+    // TODO: handle unwrap
+    let todo_from_todo_list = serde_json::to_string(inserted_todo).unwrap();
+    // update rolling counter
+    app_state.id_counter += 1;
+
+    HttpResponse::Ok().body(todo_from_todo_list)
 }
 
 #[get("/todo/get")]
 async fn get_all_todos(data: web::Data<AppState>) -> impl Responder {
-    println!("Creating todo...");
     let app_state = data.todo_list.lock().unwrap();
     HttpResponse::Ok().body(serde_json::to_string(&app_state.map).unwrap())
 }
@@ -73,7 +78,12 @@ async fn main() -> std::io::Result<()> {
             .service(welcome)
             .service(echo)
             .app_data(todo_list.clone())
-            .service(web::scope("/api").service(create_todo))
+            .service(
+                web::scope("/api")
+                    .service(create_todo)
+                    .service(api_version)
+                    .service(get_all_todos),
+            )
     })
     .bind(("127.0.0.1", 8080))?
     .run()

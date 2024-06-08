@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use time::{error::IndeterminateOffset, OffsetDateTime};
+use time::OffsetDateTime;
 
 use crate::traits::typed::Typed;
 
@@ -65,20 +65,17 @@ impl Todo {
     }
 
     // additional functions
-    pub fn new(title: &str, id: i32) -> Result<Self, IndeterminateOffset> {
-        let current_time = Self::current_local_time();
-        match current_time {
-            Ok(current_time_extracted) => Ok(Todo {
-                title: String::from(title),
-                id,
-                description: None,
-                date_created: current_time_extracted,
-                date_modified: current_time_extracted,
-                date_deadline: None,
-                date_completed: None,
-                completion_status: false,
-            }),
-            Err(err) => Err(err),
+    pub fn new(title: &str, id: i32) -> Self {
+        let date_time = OffsetDateTime::now_utc();
+        Todo {
+            title: String::from(title),
+            id,
+            description: None,
+            date_created: date_time,
+            date_modified: date_time,
+            date_deadline: None,
+            date_completed: None,
+            completion_status: false,
         }
     }
     pub fn toggle_completion_status(&mut self) {
@@ -88,15 +85,7 @@ impl Todo {
 
     // private functions
     fn update_date_modified(&mut self) {
-        let current_time = Self::current_local_time();
-        match current_time {
-            Ok(x) => self.date_modified = x,
-            Err(err) => println!("Could not get current timestamp: {}", err),
-        }
-    }
-
-    fn current_local_time() -> Result<OffsetDateTime, IndeterminateOffset> {
-        OffsetDateTime::now_local()
+        self.date_modified = OffsetDateTime::now_utc();
     }
 }
 
