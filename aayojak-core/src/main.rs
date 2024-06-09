@@ -40,21 +40,33 @@ async fn create_todo(
     todo_request_body: web::Json<CreateTodoBody>,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    // TODO: handle unwrap
-    let mut app_state = data.todo_list.lock().unwrap();
+    let app_state_result = data.todo_list.lock();
+    if let Err(err) = app_state_result {
+        return HttpResponse::InternalServerError()
+            .body(format!("Error acquiring mutex-guard: {err}"));
+    }
+
+    let mut app_state = app_state_result.unwrap();
+
     let new_id = app_state.id_counter;
     // create todo
     println!("Creating todo...");
     let todo = Todo::new(&todo_request_body.title, new_id);
     app_state.map.insert(new_id, todo);
-    // TODO: handle unwrap
     let inserted_todo = app_state.map.get(&new_id).unwrap();
-    // TODO: handle unwrap
-    let todo_from_todo_list = serde_json::to_string(inserted_todo).unwrap();
-    // update rolling counter
-    app_state.id_counter += 1;
 
-    HttpResponse::Ok().body(todo_from_todo_list)
+    //parse response
+    match serde_json::to_string(inserted_todo) {
+        Ok(response_body_todo) => {
+            app_state.id_counter += 1;
+            return HttpResponse::Ok().body(response_body_todo);
+        }
+        Err(err) => {
+            app_state.id_counter += 1;
+            return HttpResponse::InternalServerError()
+                .body(format!("Error parsing response body: {err}"));
+        }
+    }
 }
 
 #[get("/todo/get")]
