@@ -1,4 +1,4 @@
-use aayojak::structures::todo::Todo;
+use aayojak_lib::structures::todo::Todo;
 
 #[test]
 fn test_new_todo() {
@@ -13,8 +13,23 @@ fn test_new_todo() {
 fn test_status_toggling() {
     let mut todo = Todo::new("Test Todo", 100);
     assert_eq!(todo.completion_status(), false);
-    todo.toggle_completion_status();
+    assert_eq!(todo.date_completed().is_none(), true);
+
+    // test with update_date_completed false
+    todo.toggle_completion_status(true);
     assert_eq!(todo.completion_status(), true);
-    todo.toggle_completion_status();
+    assert_eq!(todo.date_completed().is_some(), true);
+
+    todo.toggle_completion_status(true);
     assert_eq!(todo.completion_status(), false);
+    assert_eq!(todo.date_completed().is_none(), true);
+
+    // test with update_date_completed false
+    todo.toggle_completion_status(false);
+    assert_eq!(todo.completion_status(), true);
+    assert_eq!(todo.date_completed().is_none(), true);
+
+    todo.toggle_completion_status(false);
+    assert_eq!(todo.completion_status(), false);
+    assert_eq!(todo.date_completed().is_none(), true);
 }
