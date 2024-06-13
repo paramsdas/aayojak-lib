@@ -6,7 +6,7 @@ description = "library crate for aayojak"
 edition = "2021"
 rust-version = "1.78"
 authors = ["Paramvir Das"]
-readme = "../README.md
+readme = "../README.md"
 repository = "https://github.com/paramsdas/aayojak-lib/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

@@ -1,6 +1,4 @@
-SHELL=/bin/bash
 library:
-	cd ./aayojak-lib/
-	cargo build --lib
-	cargo test
-	cargo doc
+	cargo build --lib --manifest-path=./aayojak-lib/Cargo.toml
+	cargo test --manifest-path=./aayojak-lib/Cargo.toml
+	cargo doc --manifest-path=./aayojak-lib/Cargo.toml
