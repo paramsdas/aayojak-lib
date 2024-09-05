@@ -1,5 +1,5 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use time::OffsetDateTime;
 
 use crate::traits::typed::Typed;
 
@@ -12,12 +12,12 @@ pub struct Todo {
     title: String,
     id: i32,
     completion_status: bool,
-    date_created: OffsetDateTime,
-    date_modified: OffsetDateTime,
+    date_created: DateTime<Utc>,
+    date_modified: DateTime<Utc>,
     // optional attributes
     description: Option<String>,
-    date_completed: Option<OffsetDateTime>,
-    date_deadline: Option<OffsetDateTime>,
+    date_completed: Option<DateTime<Utc>>,
+    date_deadline: Option<DateTime<Utc>>,
 }
 
 impl Todo {
@@ -39,11 +39,11 @@ impl Todo {
         self.completion_status
     }
     /// get the creation date
-    pub fn date_created(&self) -> &OffsetDateTime {
+    pub fn date_created(&self) -> &DateTime<Utc> {
         &self.date_created
     }
     /// get the last modified date
-    pub fn date_modified(&self) -> &OffsetDateTime {
+    pub fn date_modified(&self) -> &DateTime<Utc> {
         &self.date_modified
     }
     /// get todo description, if set
@@ -51,11 +51,11 @@ impl Todo {
         &self.description
     }
     /// get the completion date, if set
-    pub fn date_completed(&self) -> &Option<OffsetDateTime> {
+    pub fn date_completed(&self) -> &Option<DateTime<Utc>> {
         &self.date_completed
     }
     /// get the deadline date, if set
-    pub fn date_deadline(&self) -> &Option<OffsetDateTime> {
+    pub fn date_deadline(&self) -> &Option<DateTime<Utc>> {
         &self.date_deadline
     }
 
@@ -71,11 +71,11 @@ impl Todo {
         self.update_date_modified();
     }
     /// set the completion date
-    pub fn set_date_completed(&mut self, date_completed: Option<OffsetDateTime>) {
+    pub fn set_date_completed(&mut self, date_completed: Option<DateTime<Utc>>) {
         self.date_completed = date_completed;
     }
     /// set the deadline date
-    pub fn set_date_deadline(&mut self, date_deadline: Option<OffsetDateTime>) {
+    pub fn set_date_deadline(&mut self, date_deadline: Option<DateTime<Utc>>) {
         self.date_completed = date_deadline;
     }
     /// set the completion status
@@ -97,7 +97,7 @@ impl Todo {
     /// ```
     ///
     pub fn new(title: &str, id: i32) -> Self {
-        let date_time = OffsetDateTime::now_utc();
+        let date_time = Utc::now();
         Todo {
             title: String::from(title),
             id,
@@ -118,7 +118,7 @@ impl Todo {
         if update_date_completed {
             match self.completion_status {
                 true => self.set_date_completed(None),
-                false => self.set_date_completed(Some(OffsetDateTime::now_utc())),
+                false => self.set_date_completed(Some(Utc::now())),
             }
         }
         self.completion_status = !self.completion_status;
@@ -128,7 +128,7 @@ impl Todo {
     // private functions
     /// function which updates the modification date to current time (UTC)
     fn update_date_modified(&mut self) {
-        self.date_modified = OffsetDateTime::now_utc();
+        self.date_modified = Utc::now();
     }
 }
 

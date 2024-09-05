@@ -12,5 +12,5 @@ repository = "https://github.com/paramsdas/aayojak-lib/"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-time = { version = "0.3.33", features = ["local-offset", "serde"] }
+chrono = { version= "0.4.38", features=["serde"]}
 serde = { version = "1.0", features = ["derive"] }
